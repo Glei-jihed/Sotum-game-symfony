@@ -1,0 +1,283 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello GamepageController!{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            background-color: #2b2b2b;
+            color: #fff;
+        }
+
+        .container header {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-evenly;
+            border-bottom: 2px solid #fff;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .container a {
+            all: unset;
+            cursor: pointer;
+            font-size: 25px;
+        }
+
+        .GameContainer {
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat({{ columns }}, 50px);
+            gap: 1px;
+        }
+
+        .blue-square {
+            width: 50px;
+            height: 50px;
+            background-color: #0077c7;
+            text-align: center;
+            line-height: 50px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .blue-square:hover {
+            background-color: #0055a7;
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+
+        .selected-word {
+            margin-top: 20px;
+            color: #fff;
+        }
+
+         #validateWordButton {
+        margin-top: 20px;
+        padding: 10px 15px;
+        background-color: #0077c7;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    #validateWordButton:hover {
+        background-color: #0055a7;
+    }
+
+    .incorrect-square {
+        background-color: #f00;
+    }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+
+	<div class="container">
+		<header>
+
+			<a href="#" id="rules-button" data-bs-toggle="modal" data-bs-target="#rulesModal">
+		<i class="fa-regular fa-circle-question"></i>
+	</a>
+
+	<!-- Modal -->
+	<div class="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg">
+			<div class="modal-content" style="background-color: #fff; color: #000;">
+				<div class="modal-header" style="background-color: #800000;">
+					<h5 class="modal-title" id="rulesModalLabel" style="color: #fff;">Règles</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="color: #fff;"></button>
+				</div>
+
+				<div class="modal-body">
+					<p style="color: #000;">Vous avez six essais pour deviner le mot du jour, entre 6 et 9 lettres, commun à tous.</p>
+					<p style="color: #000;">Vous ne pouvez proposer que des mots commençant par la même lettre que le mot recherché, et qui se trouvent dans notre dictionnaire.</p>
+					<p style="color: #000;">Les noms propres ne sont pas acceptés.</p>
+					<p style="color: #000;">Le mot change chaque jour. Évitez donc les spoils et privilégiez le bouton de partage.</p>
+
+					<div class="table-responsive">
+						<table class="table" style="color: #eee; text-align: center; border: 1px solid #000;">
+							<tr>
+								<td style="background-color: #f00; color: #fff;">S</td>
+								<td style="background-color: #00f; color: #fff;">A</td>
+								<td style="background-color: #00f; color: #fff;">L</td>
+								<td style="background-color: #ffa500; color: #fff;">U</td>
+								<td style="background-color: #ffa500; color: #fff;">T</td>
+							</tr>
+						</table>
+					</div>
+
+					<p style="color: #000;">
+						Les lettres entourées d'un carré rouge sont bien placées,<br>
+						les lettres entourées d'un cercle jaune sont mal placées (mais présentes dans le mot).<br>
+						Les lettres qui restent sur fond bleu ne sont pas dans le mot.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+			<a href="">
+				<i class="fa-solid fa-ranking-star"></i>
+			</a>
+			<h1>Sotum</h1>
+
+			<a href="">
+				<i class="fa-solid fa-gear"></i>
+			</a>
+
+		</header>
+
+		  <main>
+        <div class="container">
+            <div class="GameContainer">
+                <div class="grid">
+    {% for row in 1..rows %}
+        {% for column in 1..columns %}
+            {% if row - 1 < validPhrases|length %}
+                <div class="blue-square" contenteditable="true" data-row="{{ row }}" data-correct-letter="{{ validPhrases[row - 1]|first }}">
+                    {% if column == 1 and row - 1 <= lastValidatedRow %}
+                        {{ validPhrases[row - 1]|first }}
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</div>
+
+                <button id="validateWordButton">Valider</button>
+                <p id="attemptsDisplay">Essais restants: 6</p>
+                <p >Score atteint : 0</p>
+              <div class="selected-word">
+    {% if validPhrases[0] is defined %}
+        Mot sélectionné aléatoirement : {{ validPhrases[0] }}
+    {% else %}
+        Mot non disponible.
+    {% endif %}
+</div>
+
+            </div>
+        </div>
+    </main>
+    </div>
+
+   <script>
+window.addEventListener("DOMContentLoaded", function () {
+    const inputCells = document.querySelectorAll('.blue-square');
+    let remainingAttempts = 6;
+    const attemptsDisplay = document.getElementById('attemptsDisplay');
+    var validPhrases = {{ validPhrases|json_encode|raw }};
+
+    function getCurrentRow() {
+        for (let cell of inputCells) {
+            if (cell.getAttribute('contenteditable') === 'true') {
+                return parseInt(cell.dataset.row);
+            }
+        }
+        return 1;
+    }
+
+    function isCurrentRowFilled(currentRow) {
+        const currentRowCells = document.querySelectorAll(`.blue-square[data-row="${currentRow}"]`);
+        for (let cell of currentRowCells) {
+            if (!cell.innerText.trim()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    document.getElementById('validateWordButton').addEventListener('click', function() {
+        const currentRow = getCurrentRow();
+        let guessedWord = '';
+        const currentRowCells = document.querySelectorAll(`.blue-square[data-row="${currentRow}"]`);
+        
+        currentRowCells.forEach(cell => {
+            guessedWord += cell.innerText.toUpperCase();
+        });
+
+        const correctWord = validPhrases[currentRow - 1].toUpperCase();
+
+        if (guessedWord === correctWord) {
+            alert('Bravo! Vous avez deviné le mot correctement.');
+
+            // Changer la couleur de fond des cases du mot validé en vert
+            currentRowCells.forEach(cell => {
+                cell.style.backgroundColor = '#00ff00'; // Vert
+                cell.setAttribute('contenteditable', 'false'); // Rendre non éditable
+            });
+
+            // Si toutes les cases de la ligne actuelle sont remplies, déverrouillez toutes les cases de la ligne suivante
+            if (isCurrentRowFilled(currentRow)) {
+                const nextRowCells = document.querySelectorAll(`.blue-square[data-row="${currentRow + 1}"]`);
+                nextRowCells.forEach(cell => {
+                    cell.setAttribute('contenteditable', 'true');
+                });
+
+                // Pré-remplir la première case de la ligne suivante avec la première lettre du mot correct
+                const firstCellOfNextRow = nextRowCells[0];
+                firstCellOfNextRow.innerText = validPhrases[currentRow].charAt(0).toUpperCase();
+
+                // Placer le focus sur la première case de la ligne suivante
+                firstCellOfNextRow.focus();
+            }
+        } else {
+            remainingAttempts--;
+            attemptsDisplay.innerText = 'Essais restants: ' + remainingAttempts;
+
+            // Changer la couleur de fond des cases de la ligne actuelle en rouge
+            currentRowCells.forEach(cell => {
+                cell.classList.add('incorrect-square');
+            });
+
+            if (remainingAttempts <= 0) {
+                alert('Vous avez épuisé tous vos essais!');
+                currentRowCells.forEach(cell => {
+                    cell.setAttribute('contenteditable', 'false');
+                });
+            } else {
+                alert('Désolé, essayez encore.');
+            }
+        }
+    });
+
+    // Empêcher l'utilisateur de passer à la ligne suivante si le mot précédent n'est pas validé
+    inputCells.forEach(cell => {
+        cell.addEventListener('focus', function() {
+            const currentRow = parseInt(cell.dataset.row);
+            if (currentRow > 1) {
+                const previousRowCells = document.querySelectorAll(`.blue-square[data-row="${currentRow - 1}"]`);
+                const previousRowWord = Array.from(previousRowCells).map(c => c.innerText).join('').toUpperCase();
+                if (previousRowWord !== validPhrases[currentRow - 2].toUpperCase()) {
+                    cell.blur();
+                }
+            }
+        });
+    });
+});
+
+
+
+
+
+
+</script>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil{% endblock %}
+
+{% block body %}
+<section class="testimonial py-5" id="profile">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 py-5 bg-primary text-white text-center">
+                <div class="card-body">
+                    {% if app.user.profilePicture %}
+                        <img src="{{ asset('profile_pictures/' ~ app.user.profilePicture) }}" alt="{{ app.user.username }}" style="width:33%">
+                    {% else %}
+                        <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="{{ app.user.username }}" style="width:33%">
+                    {% endif %}
+                    <h2 class="py-3">{{ app.user.username }}</h2>
+                    <p>{{ app.user.email }}</p>
+                </div>
+            </div>
+            <div class="col-md-8 py-5 border">
+                <h4 class="pb-4">Détails personnels</h4>
+                <form action="{{ path('profile_update') }}" method="post" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="username">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" name="username" id="username" value="{{ app.user.username }}">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" name="email" id="email" value="{{ app.user.email }}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="role">Rôle</label>
+                            <input type="text" class="form-control" disabled id="role" value="{{ app.user.roles is not empty ? app.user.roles[0] : 'Aucun rôle' }}" readonly>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="created_at">Date de création</label>
+                            <input type="text" class="form-control" id="created_at" value="{{ app.user.createdAt|date('d/m/Y') }}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <!-- Password modification fields -->
+                        <div class="form-group col-md-6">
+                            <label for="password">Nouveau mot de passe</label>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Entrer le nouveau mot de passe">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="confirm_password">Confirmez le mot de passe</label>
+                            <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirmer le nouveau mot de passe">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="profilePicture">Image de profil</label>
+                            <input type="file" class="form-control-file" name="profilePicture" id="profilePicture">
+                        </div>
+                  
+                    </div>
+                    <div class="form-row">
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

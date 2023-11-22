@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<section class="testimonial py-5" id="testimonial">
+    <div class="container">
+        <div class="row ">
+            <div class="col-md-4 py-5 bg-primary text-white text-center ">
+                <div class="card-body">
+                    <img src="http://www.ansonika.com/mavia/img/registration_bg.svg" style="width:30%">
+                    <h2 class="py-3">Inscription</h2>
+                    <p>Bienvenue sur la plateforme d'inscription de Sotum ! En rejoignant notre communauté, vous accédez à une expérience de jeu unique et stimulante. Préparez-vous à relever des défis, à enrichir votre vocabulaire et à vous amuser tout en apprenant. Votre aventure Sotum commence ici. Inscrivez-vous et plongez dans le monde des mots !</p>
+                </div>
+            </div>
+            <div class="col-md-8 py-5 border">
+                <h4 class="pb-4">Veuillez remplir vos détails</h4>
+                {{ form_start(registrationForm) }}
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            {{ form_label(registrationForm.username, 'Nom d\'utilisateur') }}
+                            {{ form_widget(registrationForm.username, {'attr': {'class': 'form-control', 'placeholder': 'Nom d\'utilisateur'}}) }}
+                        </div>
+                        <div class="form-group col-md-6">
+                            {{ form_label(registrationForm.email, 'Email') }}
+                            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Email'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            {{ form_label(registrationForm.plainPassword, 'Mot de passe') }}
+                            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            {{ form_label(registrationForm.profilePicture, 'Photo de profil') }}
+                            {{ form_widget(registrationForm.profilePicture, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="form-group col-md-6">
+                            <img id="preview" src="#" alt="Aperçu de la photo de profil" style="max-width: 100%; display: none;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        {{ form_widget(registrationForm.agreeTerms) }}
+                        {{ form_label(registrationForm.agreeTerms, 'J\'accepte les termes et conditions') }}
+                    </div>
+                    <div class="form-row">
+                        <button type="submit" class="btn btn-danger">Créer mon compte</button>
+                    </div>
+                {{ form_end(registrationForm) }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('registrationForm_profilePicture').addEventListener('change', function(e) {
+    const preview = document.getElementById('preview');
+    if (e.target.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.style.display = 'block';
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    } else {
+        preview.style.display = 'none';
+        preview.src = '';
+    }
+});
+</script>
+{% endblock %}

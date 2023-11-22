@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {% block stylesheets %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+        <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.css"
+        rel="stylesheet"
+      />
+        {% endblock %}
+        
+      
+    </head>
+    <body>
+
+      {% if app.user %}
+      {# Navbar pour les utilisateurs authentifiés #}
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+          <a class="navbar-brand" href="#">Sotum</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+        
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                      <a class="nav-link" href="/gamepage">jouer</a>
+                  </li>
+               
+              </ul>
+             
+              <ul class="navbar-nav mr-5 ">
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      {{ app.user.username }}
+                  </a>
+                  <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="/profile">Mon profil</a>
+                      <a class="dropdown-item" href="#">Paramètres</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="/logout">Déconnexion</a>
+                  </div>
+              </li>
+              </ul>
+
+            
+          </div>
+      </nav>
+  {% else %}
+      {# Navbar pour les visiteurs non authentifiés #}
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+          <a class="navbar-brand" href="#">Sotum</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+        
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                  <li class="nav-item active">
+                      <a class="nav-link" href="/">Acceuil</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/register">Crée mon compte</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/login">Connexion</a>
+                  </li>
+              </ul>
+            
+          </div>
+      </nav>
+  {% endif %}
+  
+        <div class="container">
+        {% block body %}{% endblock %}
+        </div>
+
+
+        {% block javascripts %}
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.2/mdb.min.js"></script>
+        <script src="https://kit.fontawesome.com/36b9253a34.js" crossorigin="anonymous"></script>
+        <script>
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const squares = document.querySelectorAll('.blue-square');
+            
+                squares.forEach((square, index) => {
+                    // Écoutez les événements de saisie
+                    square.addEventListener('input', function() {
+                        // Assurez-vous qu'il n'y a qu'une seule lettre dans le carré
+                        if (this.innerText.length > 1) {
+                            this.innerText = this.innerText.charAt(0);
+                        }
+            
+                        // Si ce carré a une lettre, concentrez-vous sur le carré suivant
+                        if (this.innerText.length === 1 && squares[index + 1]) {
+                            squares[index + 1].focus();
+                        }
+                    });
+            
+                    // Empêchez la navigation vers le carré suivant si celui-ci est vide
+                    square.addEventListener('focus', function() {
+                        if (index > 0 && !squares[index - 1].innerText) {
+                            squares[index - 1].focus();
+                        }
+                    });
+                });
+            });
+            
+        </script>
+
+        {% endblock %}
+    </body>
+</html>

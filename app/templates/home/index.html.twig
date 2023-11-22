@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bienvenue sur Sotum!{% endblock %}
+
+{% block body %}
+<style>
+    .home-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .home-wrapper a { color: #007bff; text-decoration: none; }
+    .home-wrapper a:hover { text-decoration: underline; }
+</style>
+
+<div class="home-wrapper">
+    <h1>Bienvenue sur le jeu Sotum! 🎮</h1>
+    
+    <p>Découvrez les mondes mystérieux et les quêtes passionnantes de Sotum. Choisissez votre chemin et commencez votre aventure!</p>
+    
+    <h2>Routes disponibles :</h2>
+    <ul>
+        <li><a href="/register">cree mon compte</a></li>
+        <li><a href="/login">connexion</a></li>
+     
+    </ul>
+</div>
+{% endblock %}
